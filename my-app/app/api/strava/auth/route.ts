@@ -8,5 +8,5 @@ export async function GET() {
     const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&approval_prompt=force&scope=${scope}`
     console.log('Authorization URL:', authUrl)
     
-    return NextResponse.redirect(redirectUri)
+    return NextResponse.redirect(authUrl)
 }
