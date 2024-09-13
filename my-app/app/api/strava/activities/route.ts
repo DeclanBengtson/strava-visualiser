@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-async function refreshAccessToken(refreshToken: string) {
+async function refreshAccessToken(refreshToken: string): Promise<string | null> {
     console.log("REFRESHING ACCESS TOKEN...")
     const response = await fetch('https://www.strava.com/oauth/token', {
         method: 'POST',
@@ -37,12 +37,12 @@ async function fetchStravaData(accessToken: string, endpoint: string) {
 }
 export async function GET() {
     const cookieStore = cookies()
-    let accessToken = cookieStore.get('strava_access_token')?.value
+    const accessToken: string | undefined = cookieStore.get('strava_access_token')?.value
     const refreshToken = cookieStore.get('strava_refresh_token')?.value
 
-    if (!accessToken && refreshToken) {
+    if (!refreshToken) {
         try {
-            accessToken = await refreshAccessToken(refreshToken)
+            const accessToken = await refreshAccessToken(refreshToken)
             cookies().set('strava_access_token', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',

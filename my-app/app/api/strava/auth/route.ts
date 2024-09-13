@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-export async function GET(request: Request) {
+export async function GET() {
     const clientId = process.env.STRAVA_CLIENT_ID
     const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/strava/callback`
     const scope = 'read,activity:read_all'

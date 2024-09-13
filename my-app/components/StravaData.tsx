@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {Activity, Gauge, Calendar, Clock, MapPin, TrendingUp, User, Award, Zap, Bike} from 'lucide-react'
+import {Activity, Calendar, Clock, MapPin, TrendingUp, User, Award, Zap, Bike} from 'lucide-react'
 
 interface StravaActivity {
     id: number
@@ -46,7 +46,7 @@ export default function StravaData() {
     const [data, setData] = useState<DashboardData[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-
+    
     const fetchData = async () => {
         setLoading(true)
         setError(null)
@@ -56,14 +56,18 @@ export default function StravaData() {
                 throw new Error('Failed to fetch data')
             }
             const dashboardData = await response.json()
-            console.log(dashboardData)
+            
             setData(dashboardData)
+            
+            
         } catch (err) {
             setError('Failed to load data. Please try again.')
         } finally {
             setLoading(false)
         }
     }
+    
+ console.log(data['athleteStats'])
 
     useEffect(() => {
         fetchData()
@@ -80,9 +84,8 @@ export default function StravaData() {
         return `${hours}h ${minutes}m`
     }
     
-    const formatDistance = (distance: string) => {
+    const formatDistance = (distance: number) => {
         const km = (distance / 1000).toFixed(2)
-        console.log(km)
         return `${km} km`
     }
 
@@ -118,10 +121,10 @@ export default function StravaData() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                <p>Total Rides: {data.athleteStats?.all_run_totals.count}</p>
-                                <p>Total Distance: {(data.athleteStats?.all_run_totals.distance / 1000).toFixed(2)} km</p>
-                                <p>Total Time: {formatDuration(data.athleteStats?.all_run_totals.moving_time || 0)}</p>
-                                <p>Total Elevation: {data.athleteStats?.all_run_totals.elevation_gain.toFixed(0)} m</p>
+                                <p>Total Rides: {data['athleteStats'].all_run_totals.count}</p>
+                                <p>Total Distance: {(data['athleteStats'].all_run_totals.distance / 1000).toFixed(2)} km</p>
+                                <p>Total Time: {formatDuration(data['athleteStats'].all_run_totals.moving_time || 0)}</p>
+                                <p>Total Elevation: {data['athleteStats'].all_run_totals.elevation_gain.toFixed(0)} m</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -134,10 +137,10 @@ export default function StravaData() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                <p>YTD Runs: {data.athleteStats?.ytd_run_totals.count}</p>
-                                <p>YTD Distance: {(data.athleteStats?.ytd_run_totals.distance / 1000).toFixed(2)} km</p>
-                                <p>YTD Time: {formatDuration(data.athleteStats?.ytd_run_totals.moving_time || 0)}</p>
-                                <p>YTD Elevation: {data.athleteStats?.ytd_run_totals.elevation_gain.toFixed(0)} m</p>
+                                <p>YTD Runs: {data['athleteStats'].ytd_run_totals.count}</p>
+                                <p>YTD Distance: {(data['athleteStats'].ytd_run_totals.distance / 1000).toFixed(2)} km</p>
+                                <p>YTD Time: {formatDuration(data['athleteStats'].ytd_run_totals.moving_time || 0)}</p>
+                                <p>YTD Elevation: {data['athleteStats'].ytd_run_totals.elevation_gain.toFixed(0)} m</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -154,10 +157,10 @@ export default function StravaData() {
                         </CardHeader>
                         <CardContent>
                            <div className="space-y-2">
-                                <p>Recent Rides: {data.athleteStats?.recent_run_totals.count}</p>
-                                <p>Recent Distance: {(data.athleteStats?.recent_run_totals.distance / 1000).toFixed(2)} km</p>
-                                <p>Recent Time: {formatDuration(data.athleteStats?.recent_run_totals.moving_time || 0)}</p>
-                                <p>Recent Elevation: {data.athleteStats?.recent_run_totals.elevation_gain.toFixed(0)} m</p>
+                                <p>Recent Rides: {data['athleteStats'].recent_run_totals.count}</p>
+                                <p>Recent Distance: {(data['athleteStats'].recent_run_totals.distance / 1000).toFixed(2)} km</p>
+                                <p>Recent Time: {formatDuration(data['athleteStats'].recent_run_totals.moving_time || 0)}</p>
+                                <p>Recent Elevation: {data['athleteStats'].recent_run_totals.elevation_gain.toFixed(0)} m</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -166,8 +169,15 @@ export default function StravaData() {
 
                 {/* Right Column - Scrollable Activities */}
                 <div className="lg:col-span-1 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-4">
-                    <h2 className="text-2xl font-bold sticky top-0 bg-white py-2">Recent Activities</h2>
-                    {data.activities.map((activity) => (
+                    <Card> 
+                    
+                        <CardHeader>
+                            <CardTitle className="flex items-center space-x-2">
+                                <User className="h-6 w-6" />
+                                <span>Recent Activities</span>
+                            </CardTitle>
+                        </CardHeader>
+                        {data['activities'].map((activity) => (
                         <Card key={activity.id} className="hover:shadow-lg transition-shadow duration-300">
                             <CardHeader className="bg-gradient-to-r from-orange-400 to-red-500 text-white">
                                 <CardTitle className="flex items-center space-x-2">
@@ -209,6 +219,7 @@ export default function StravaData() {
                             </CardContent>
                         </Card>
                     ))}
+                    </Card>
                 </div>
             </div>
         </div>
