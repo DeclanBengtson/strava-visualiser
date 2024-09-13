@@ -1,8 +1,8 @@
+/*
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 async function refreshAccessToken(refreshToken: string) {
-    console.log("REFRESHING ACCESS TOKEN...")
     const response = await fetch('https://www.strava.com/oauth/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -15,26 +15,15 @@ async function refreshAccessToken(refreshToken: string) {
     })
 
     if (!response.ok) {
-        throw new Error('Failed to refresh token')
+        const errorText = await response.text()
+        console.error('Failed to fetch athlete stats:', response.status, errorText)
+        throw new Error(`Failed to fetch athlete stats: ${response.status} ${errorText}`)
     }
-    
+
     const data = await response.json()
     return data.access_token
 }
 
-async function fetchStravaData(accessToken: string, endpoint: string) {
-    const response = await fetch(`https://www.strava.com/api/v3/${endpoint}`, {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-    })
-
-    if (!response.ok) {
-        throw new Error(`Failed to fetch ${endpoint}: ${response.status}`)
-    }
-
-    return response.json()
-}
 export async function GET() {
     const cookieStore = cookies()
     let accessToken = cookieStore.get('strava_access_token')?.value
@@ -57,14 +46,22 @@ export async function GET() {
     if (!accessToken) {
         return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
-    
-    
-        const [activities, athleteStats] = await Promise.all ([
-            fetchStravaData(accessToken, 'athlete/activities?per_page=10'),      
-            fetchStravaData(accessToken, 'athletes/29745314/stats')
-            ])
-    
-    return NextResponse.json({ activities, athleteStats })
-}
 
-//athleteStats
+    try {
+        const response = await fetch('https://www.strava.com/api/v3/athletes/me/stats', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch athlete stats')
+        }
+
+        const stats = await response.json()
+        return NextResponse.json(stats)
+    } catch (error) {
+        console.error('Error fetching Strava athlete stats:', error)
+        return NextResponse.json({ error: 'Failed to fetch athlete stats', details: error.message }, { status: 500 })
+    }
+}*/

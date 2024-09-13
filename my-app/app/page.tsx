@@ -5,6 +5,7 @@ import StravaData from '/Users/rodekors/RiderProjects/shadcn-test/my-app/compone
 export default function Dashboard() {
     const cookieStore = cookies()
     const isAuthenticated = !!cookieStore.get('strava_refresh_token')
+    console.log(cookieStore)
     
     return (
         <div className="container mx-auto p-4">
