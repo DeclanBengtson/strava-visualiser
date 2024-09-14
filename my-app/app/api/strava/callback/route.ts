@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     cookies().set('strava_refresh_token', tokenData.refresh_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 365 * 24 * 60 * 60 // 1 year
+        maxAge: 24 * 60 * 60 // 1 day
     })
 
     // Log cookies after setting

@@ -10,3 +10,5 @@ export async function GET() {
     
     return NextResponse.redirect(authUrl)
 }
+
+//When deploying to production, the website needs to be changed on Strava API settings to be the full name of the website it redirects to, + /api/strava/callback
