@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts"
+import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 
 import {
     Card,
@@ -16,7 +16,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-import {Legend, Tooltip} from "chart.js";
+import {Legend} from "chart.js";
 
 export const description = "An interactive line chart"
 
@@ -49,6 +49,19 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-white p-4 border border-gray-300 rounded shadow-lg">
+                <p className="font-bold">{label}</p>
+                <p className="text-[#8884d8]">Distance: {payload[0].value.toFixed(2)} km</p>
+                <p className="text-[#82ca9d]">Duration: {payload[1].value.toFixed(2)} hours</p>
+            </div>
+        );
+    }
+    return null;
+};
+
 export default function ChartComponent({ activities }: StravaChartProps) {
 
     const chartData = activities.map(activity => ({
@@ -65,7 +78,7 @@ export default function ChartComponent({ activities }: StravaChartProps) {
             duration: chartData.reduce((acc, curr) => acc + curr.duration, 0),
             distance: chartData.reduce((acc, curr) => acc + curr.distance, 0),
         }),
-        []
+        [chartData]
     )
 
     return (
@@ -74,7 +87,7 @@ export default function ChartComponent({ activities }: StravaChartProps) {
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
                     <CardTitle>Line Chart - Interactive</CardTitle>
                     <CardDescription>
-                        Showing last 100 recents activites
+                        Showing last 150 recent activities
                     </CardDescription>
                 </div>
                 
@@ -90,16 +103,38 @@ export default function ChartComponent({ activities }: StravaChartProps) {
                             bottom: 5,
                         }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis yAxisId="left" />
-                        <YAxis yAxisId="right" orientation="right" />
-                        <Tooltip />
-                        <Legend />
-                        <Line yAxisId="left" type="monotone" dataKey="distance" stroke="#8884d8" activeDot={{ r: 8 }} name="Distance (km)" />
-                        <Line yAxisId="right" type="monotone" dataKey="duration" stroke="#82ca9d" name="Duration (hours)" />
+                        <CartesianGrid strokeDasharray="3 3"/>
+                        <XAxis dataKey="date"/>
+                        <YAxis yAxisId="left"/>
+                        <YAxis yAxisId="right" orientation="right"/>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend/>
+                        <Line yAxisId="left" type="monotone" dataKey="distance" stroke="#8884d8" activeDot={{r: 8}}
+                              name="Distance (km)"/>
+                        <Line yAxisId="right" type="monotone" dataKey="duration" stroke="#82ca9d"
+                              name="Duration (hours)"/>
                     </LineChart>
                 </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-4">
+                    <div className="flex items-center">
+                        <div className="w-4 h-4 bg-[#8884d8] mr-2"></div>
+                        <span>Distance (km)</span>
+                    </div>
+                    <div className="flex items-center">
+                        <div className="w-4 h-4 bg-[#82ca9d] mr-2"></div>
+                        <span>Duration (hours)</span>
+                    </div>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-500">Total Distance</h3>
+                        <p className="text-2xl font-semibold text-gray-900">{total.distance.toFixed(2)} km</p>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-500">Total Duration</h3>
+                        <p className="text-2xl font-semibold text-gray-900">{total.duration.toFixed(2)} hours</p>
+                    </div>
+                </div>
             </CardContent>
         </Card>
     )
