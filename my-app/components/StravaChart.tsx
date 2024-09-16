@@ -99,6 +99,7 @@ export default function ChartComponent({activities}: StravaChartProps) {
                         id="show-duration"
                         checked={showDuration}
                         onCheckedChange={setShowDuration}
+                        className="data-[state=checked]:bg-blue-500"
                     />
                     <Label htmlFor="show-duration" className="ml-2 text-gray-300">
                         Show Duration
@@ -154,7 +155,7 @@ export default function ChartComponent({activities}: StravaChartProps) {
                         )}
                     </BarChart>
                 </ResponsiveContainer>
-                <div className="mt-4 flex justify-center space-x-4">
+                <div className="flex space-x-8">
                     <div className="flex items-center">
                         <div className="w-4 h-4 bg-[#8884d8] mr-2"></div>
                         <span className="text-gray-300">Distance (km)</span>
@@ -166,7 +167,7 @@ export default function ChartComponent({activities}: StravaChartProps) {
                         </div>
                     )}
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-4">
+                <div className="flex space-x-8">
                     <div>
                         <h3 className="text-sm font-medium text-gray-400">Total Distance</h3>
                         <p className="text-2xl font-semibold text-gray-100">{total.distance.toFixed(2)} km</p>
