@@ -60,7 +60,7 @@ export async function GET() {
     
     
         const [activities, athleteStats] = await Promise.all ([
-            fetchStravaData(accessToken, 'athlete/activities?per_page=150'),      
+            fetchStravaData(accessToken, 'athlete/activities?per_page=100'),      
             fetchStravaData(accessToken, 'athletes/29745314/stats')
             ])
     

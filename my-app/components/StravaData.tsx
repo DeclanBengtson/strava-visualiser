@@ -119,7 +119,6 @@ export default function StravaData() {
                 </Button>
             </div>
             
-            <h1 className="text-3xl font-bold text-center mb-8">Strava Dashboard</h1>
             {showChart ? (
                 <div className="h-[calc(100vh-8rem)]">
                     <ChartComponent activities={data['activities']} />
