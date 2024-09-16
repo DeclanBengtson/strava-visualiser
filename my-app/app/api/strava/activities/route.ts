@@ -59,12 +59,11 @@ export async function GET() {
     }
     
     
-        const [activities, athleteStats] = await Promise.all ([
+        const [activities, athleteStats, athlete] = await Promise.all ([
             fetchStravaData(accessToken, 'athlete/activities?per_page=100'),      
-            fetchStravaData(accessToken, 'athletes/29745314/stats')
+            fetchStravaData(accessToken, 'athletes/29745314/stats'),
+            fetchStravaData(accessToken, 'athlete')
             ])
     
-    return NextResponse.json({ activities, athleteStats })
+    return NextResponse.json({ activities, athleteStats, athlete })
 }
-
-//athleteStats

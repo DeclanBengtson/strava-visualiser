@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Activity, Bike, Calendar, Clock, MapPin, TrendingUp } from 'lucide-react'
 
 interface StravaActivity {
@@ -22,56 +22,69 @@ interface RecentActivitiesProps {
 
 export function RecentActivities({ activities, formatDate, formatDuration, formatDistance }: RecentActivitiesProps) {
     return (
-        <Card className="h-[calc(100vh-2rem)] flex flex-col">
-            <CardHeader className="sticky top-0 z-10 bg-white border-b">
-                <CardTitle className="flex items-center space-x-2">
-                    <Activity className="h-6 w-6"/>
+        <Card className="w-full bg-gray-900" >
+            <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-white">
+                    <Activity className="h-6 w-6 "/>
                     <span>Recent Activities</span>
                 </CardTitle>
             </CardHeader>
-            <ScrollArea className="flex-grow">
-                <div className="space-y-4 p-4">
-                    {activities.map((activity) => (
-                        <Card key={activity.id} className="hover:shadow-md transition-shadow duration-300">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg font-semibold">{activity.name}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Distance</TableHead>
+                            <TableHead>Duration</TableHead>
+                            <TableHead>Elevation</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Location</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {activities.map((activity) => (
+                            <TableRow key={activity.id} className="text-white">
+                                <TableCell className="font-medium">{activity.name}</TableCell>
+                                <TableCell>
                                     <div className="flex items-center space-x-2">
-                                        <Bike className="h-4 w-4 text-gray-500"/>
                                         <span>{activity.type}</span>
                                     </div>
+                                </TableCell>
+                                <TableCell>
                                     <div className="flex items-center space-x-2">
-                                        <TrendingUp className="h-4 w-4 text-gray-500"/>
                                         <span>{formatDistance(activity.distance)}</span>
                                     </div>
+                                </TableCell>
+                                <TableCell>
                                     <div className="flex items-center space-x-2">
-                                        <Clock className="h-4 w-4 text-gray-500"/>
                                         <span>{formatDuration(activity.moving_time)}</span>
                                     </div>
+                                </TableCell>
+                                <TableCell>
                                     <div className="flex items-center space-x-2">
-                                        <TrendingUp className="h-4 w-4 text-gray-500"/>
                                         <span>{activity.total_elevation_gain.toFixed(0)} m</span>
                                     </div>
-                                    <div className="flex items-center space-x-2 col-span-2">
-                                        <Calendar className="h-4 w-4 text-gray-500"/>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center space-x-2">
                                         <span>{formatDate(activity.start_date_local)}</span>
                                     </div>
+                                </TableCell>
+                                <TableCell>
                                     {activity.start_latlng && (
-                                        <div className="flex items-center space-x-2 col-span-2">
-                                            <MapPin className="h-4 w-4 text-gray-500"/>
+                                        <div className="flex items-center space-x-2">
                                             <span>
                                                 {activity.start_latlng[0].toFixed(2)}, {activity.start_latlng[1].toFixed(2)}
                                             </span>
                                         </div>
                                     )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </ScrollArea>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
         </Card>
     )
 }

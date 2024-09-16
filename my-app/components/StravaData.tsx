@@ -10,6 +10,7 @@ import { RecentActivities } from "@/components/RecentActivities"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {Stats} from "@/components/Stats.tsx";
 import {LineChart} from "recharts";
+import { AthleteAvatar } from "@/components/AthleteAvatar"
 
 interface StravaActivity {
     id: number
@@ -43,9 +44,18 @@ interface AthleteStats {
     }
 }
 
+interface Athlete {
+    id: number
+    city: string
+    firstname: string
+    lastname: string
+    profile: string
+}
+
 interface DashboardData {
     activities: StravaActivity[]
     athleteStats: AthleteStats
+    athlete: Athlete
 }
 
 export default function StravaData() {
@@ -74,7 +84,7 @@ export default function StravaData() {
         }
     }
     
- console.log(data['athleteStats'])
+ console.log(data['athlete'])
 
     useEffect(() => {
         fetchData()
@@ -96,6 +106,11 @@ export default function StravaData() {
         return `${km} km`
     }
 
+    const handleLogout = () => {
+        // Implement logout logic here
+        console.log('Logging out...')
+    }
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -115,8 +130,10 @@ export default function StravaData() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-8">Strava Dashboard</h1>
-
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold">Strava Dashboard</h1>
+                <AthleteAvatar athlete={data['athlete']} onLogout={handleLogout}/>
+            </div>
             <Tabs defaultValue="stats" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="stats" className="flex items-center space-x-2">
