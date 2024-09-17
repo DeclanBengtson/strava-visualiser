@@ -46,5 +46,5 @@ export async function GET(request: Request) {
     // Here, you would typically store tokenData.access_token and tokenData.refresh_token
     // in a secure place like a database
 
-    return NextResponse.redirect('http://localhost:3000/')
+    return NextResponse.redirect(process.env.NEXT_PUBLIC_BASE_URL)
 }
