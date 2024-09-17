@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {CartesianGrid, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar} from "recharts"
+import {CartesianGrid, BarChart, ResponsiveContainer, Tooltip, Legend, XAxis, YAxis, Bar, TooltipProps} from "recharts"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 
@@ -12,10 +12,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    ChartConfig
-} from "@/components/ui/chart"
-import {Legend} from "chart.js";
+
+
 
 interface StravaActivity {
     id: number;
@@ -29,22 +27,6 @@ interface StravaActivity {
 interface StravaChartProps {
     activities: StravaActivity[];
 }
-
-
-
-const chartConfig = {
-    views: {
-        label: "Page Views",
-    },
-    duration: {
-        label: "duration",
-        color: "hsl(var(--chart-1))",
-    },
-    distance: {
-        label: "distance",
-        color: "hsl(var(--chart-2))",
-    },
-} satisfies ChartConfig
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
