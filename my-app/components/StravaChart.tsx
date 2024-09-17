@@ -86,7 +86,7 @@ export default function ChartComponent({activities}: StravaChartProps) {
     )
 
     return (
-        <Card className="bg-gray-900 text-gray-100">
+        <Card className="bg-black text-gray-100">
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b border-gray-800 p-0 sm:flex-row">
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
                     <CardTitle>Line Chart - Interactive</CardTitle>
@@ -107,7 +107,7 @@ export default function ChartComponent({activities}: StravaChartProps) {
                 </div>
 
             </CardHeader>
-            <CardContent className="px-2 sm:p-6">
+            <CardContent className="px-2 sm:p-6 bg-black text-white border border-gray-800">
                 <ResponsiveContainer width="100%" height={400}>
                     <BarChart
                         data={chartData}

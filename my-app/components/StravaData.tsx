@@ -129,23 +129,23 @@ export default function StravaData() {
     }
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 bg-black text-white min-h-screen">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Strava Dashboard</h1>
                 <AthleteAvatar athlete={data['athlete']} onLogout={handleLogout}/>
             </div>
             <Tabs defaultValue="stats" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="stats" className="flex items-center space-x-2">
-                        <LineChart className="h-4 w-4"/>
+                <TabsList className="bg-gray-100">
+                    <TabsTrigger value="stats" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
+                       
                         <span>Stats</span>
                     </TabsTrigger>
-                    <TabsTrigger value="activities" className="flex items-center space-x-2">
-                        <Activity className="h-4 w-4"/>
+                    <TabsTrigger value="activities" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
+                        
                         <span>Activities</span>
                     </TabsTrigger>
-                    <TabsTrigger value="chart" className="flex items-center space-x-2">
-                        <BarChart2 className="h-4 w-4"/>
+                    <TabsTrigger value="chart" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
+                        
                         <span>Chart</span>
                     </TabsTrigger>
                 </TabsList>

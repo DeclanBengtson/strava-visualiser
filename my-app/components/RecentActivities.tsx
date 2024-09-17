@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Activity, Bike, Calendar, Clock, MapPin, TrendingUp } from 'lucide-react'
+import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 interface StravaActivity {
     id: number
@@ -22,17 +23,18 @@ interface RecentActivitiesProps {
 
 export function RecentActivities({ activities, formatDate, formatDuration, formatDistance }: RecentActivitiesProps) {
     return (
-        <Card className="w-full bg-gray-900" >
-            <CardHeader>
+        <Card className="w-full bg-black text-white border h-[calc(100vh-12rem)]" >
+            <CardHeader className="py-3 text-lg">
                 <CardTitle className="flex items-center space-x-2 text-white">
                     <Activity className="h-6 w-6 "/>
                     <span>Recent Activities</span>
                 </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
+                <ScrollArea className="h-[calc(100vh-16rem)]">
                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="hover:bg-transparent border-b">
                             <TableHead>Name</TableHead>
                             <TableHead>Type</TableHead>
                             <TableHead>Distance</TableHead>
@@ -44,7 +46,7 @@ export function RecentActivities({ activities, formatDate, formatDuration, forma
                     </TableHeader>
                     <TableBody>
                         {activities.map((activity) => (
-                            <TableRow key={activity.id} className="text-white">
+                            <TableRow key={activity.id} className="text-white border-b">
                                 <TableCell className="font-medium">{activity.name}</TableCell>
                                 <TableCell>
                                     <div className="flex items-center space-x-2">
@@ -84,6 +86,7 @@ export function RecentActivities({ activities, formatDate, formatDuration, forma
                         ))}
                     </TableBody>
                 </Table>
+                </ScrollArea>
             </CardContent>
         </Card>
     )
