@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from "react"
-import {CartesianGrid, Line, LineChart, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar} from "recharts"
+import {CartesianGrid, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar} from "recharts"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
 
 import {
     Card,
@@ -14,10 +13,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {
-    ChartConfig,
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
+    ChartConfig
 } from "@/components/ui/chart"
 import {Legend} from "chart.js";
 
@@ -74,8 +70,8 @@ export default function ChartComponent({activities}: StravaChartProps) {
         duration: activity.moving_time / 3600 // Convert to hours
     }));
     
-    const [activeChart, setActiveChart] =
-        React.useState<keyof typeof chartConfig>("duration")
+    // const [activeChart, setActiveChart] =
+    //     React.useState<keyof typeof chartConfig>("duration")
 
     const total = React.useMemo(
         () => ({

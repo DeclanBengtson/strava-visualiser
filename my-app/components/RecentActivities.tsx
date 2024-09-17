@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Activity, Bike, Calendar, Clock, MapPin, TrendingUp } from 'lucide-react'
+import { Activity } from 'lucide-react'
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 interface StravaActivity {

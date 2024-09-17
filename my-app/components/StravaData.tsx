@@ -2,14 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {Activity, Calendar, Clock, MapPin, TrendingUp, User, Award, Zap, Bike, BarChart2} from 'lucide-react'
-import {ScrollArea} from "@/components/ui/scroll-area"
 import ChartComponent from "@/components/StravaChart.tsx";
 import { RecentActivities } from "@/components/RecentActivities"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {Stats} from "@/components/Stats.tsx";
-import {LineChart} from "recharts";
 import { AthleteAvatar } from "@/components/AthleteAvatar"
 
 interface StravaActivity {
@@ -62,7 +58,6 @@ export default function StravaData() {
     const [data, setData] = useState<DashboardData[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [showChart, setShowChart] = useState(false)
     
     const fetchData = async () => {
         setLoading(true)
