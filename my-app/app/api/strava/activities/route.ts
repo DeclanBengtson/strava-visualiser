@@ -40,7 +40,7 @@ export async function GET() {
     const accessToken: string | undefined = cookieStore.get('strava_access_token')?.value
     const refreshToken = cookieStore.get('strava_refresh_token')?.value
 
-    if (!refreshToken) {
+    if (!accessToken && refreshToken) {
         try {
             const accessToken = await refreshAccessToken(refreshToken)
             cookies().set('strava_access_token', accessToken, {
@@ -53,17 +53,25 @@ export async function GET() {
             return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
         }
     }
-
+    
     if (!accessToken) {
         return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
-    
-    
-        const [activities, athleteStats, athlete] = await Promise.all ([
-            fetchStravaData(accessToken, 'athlete/activities?per_page=100'),      
-            fetchStravaData(accessToken, 'athletes/29745314/stats'),
-            fetchStravaData(accessToken, 'athlete')
-            ])
-    
-    return NextResponse.json({ activities, athleteStats, athlete })
+
+
+    try {
+        // First, fetch the athlete data to get the ID
+        const athlete = await fetchStravaData(accessToken, 'athlete')
+
+        // Now use the athlete's ID to fetch stats
+        const [activities, athleteStats] = await Promise.all([
+            fetchStravaData(accessToken, 'athlete/activities?per_page=100'),
+            fetchStravaData(accessToken, `athletes/${athlete.id}/stats`),
+        ])
+
+        return NextResponse.json({ activities, athleteStats, athlete })
+    } catch (error) {
+        console.error('Failed to fetch Strava data:', error)
+        return NextResponse.json({ error: 'Failed to fetch Strava data' }, { status: 500 })
+    }
 }
