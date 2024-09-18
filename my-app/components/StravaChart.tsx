@@ -13,8 +13,6 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-
-
 interface StravaActivity {
     id: number;
     name: string;
@@ -25,7 +23,7 @@ interface StravaActivity {
 }
 
 interface StravaChartProps {
-    activities: StravaActivity[];
+    activities: StravaActivity[] | undefined;
 }
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
@@ -42,18 +40,16 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
 };
 
 
-
 export default function ChartComponent({activities}: StravaChartProps) {
     const [showDuration, setShowDuration] = React.useState(false);
-
-    const chartData = activities.map(activity => ({
-        date: new Date(activity.start_date_local).toLocaleDateString(),
-        distance: activity.distance / 1000, // Convert to kilometers
-        duration: activity.moving_time / 3600 // Convert to hours
-    }));
-    
-    // const [activeChart, setActiveChart] =
-    //     React.useState<keyof typeof chartConfig>("duration")
+    const chartData = React.useMemo(() => {
+        if (!activities) return [];
+        return activities.map(activity => ({
+            date: new Date(activity.start_date_local).toLocaleDateString(),
+            distance: activity.distance / 1000, // Convert to kilometers
+            duration: activity.moving_time / 3600 // Convert to hours
+        }));
+    }, [activities]);
 
     const total = React.useMemo(
         () => ({
@@ -63,13 +59,33 @@ export default function ChartComponent({activities}: StravaChartProps) {
         [chartData]
     )
 
+
+    
+    if (!activities || activities.length === 0) {
+        return (
+            <Card className="bg-black text-gray-100">
+                <CardHeader>
+                    <CardTitle>Line Chart - Interactive</CardTitle>
+                    <CardDescription className="text-gray-400">
+                        No activity data available
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center justify-center h-64">
+                    <p>No activities to display</p>
+                </CardContent>
+            </Card>
+        );
+    }
+    
+
+
     return (
         <Card className="bg-black text-gray-100">
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b border-gray-800 p-0 sm:flex-row">
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
                     <CardTitle>Line Chart - Interactive</CardTitle>
                     <CardDescription className="text-gray-400">
-                        Showing last 150 recent activities
+                        Showing last {activities.length} recent activities
                     </CardDescription>
                 </div>
                 <div className="flex items-center px-6 py-5 sm:py-6">

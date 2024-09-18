@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import {NextRequest, NextResponse} from 'next/server'
 import { cookies } from 'next/headers'
 
 async function refreshAccessToken(refreshToken: string): Promise<string | null> {
@@ -35,7 +35,7 @@ async function fetchStravaData(accessToken: string, endpoint: string) {
 
     return response.json()
 }
-export async function GET() {
+export async function GET( request: NextRequest) {
     const cookieStore = cookies()
     const accessToken: string | undefined = cookieStore.get('strava_access_token')?.value
     const refreshToken = cookieStore.get('strava_refresh_token')?.value
@@ -60,16 +60,38 @@ export async function GET() {
 
 
     try {
+        // Parse query parameters
+        const searchParams = request.nextUrl.searchParams
+        const page = parseInt(searchParams.get('page') || '1', 10)
+        const perPage = parseInt(searchParams.get('per_page') || '30', 10)
+        const limit = parseInt(searchParams.get('limit') || '200', 10)
+
+        // Ensure page and perPage are valid numbers
+        if (isNaN(page) || isNaN(perPage) || page < 1 || perPage < 1) {
+            return NextResponse.json({ error: 'Invalid page or per_page parameter' }, { status: 400 })
+        }
+
         // First, fetch the athlete data to get the ID
         const athlete = await fetchStravaData(accessToken, 'athlete')
 
-        // Now use the athlete's ID to fetch stats
-        const [activities, athleteStats] = await Promise.all([
-            fetchStravaData(accessToken, 'athlete/activities?per_page=100'),
-            fetchStravaData(accessToken, `athletes/${athlete.id}/stats`),
-        ])
+        // Fetch stats
+        const athleteStats = await fetchStravaData(accessToken, `athletes/${athlete.id}/stats`)
 
-        return NextResponse.json({ activities, athleteStats, athlete })
+        // Fetch paginated activities
+        const paginatedActivities = await fetchStravaData(accessToken, `athlete/activities?page=${page}&per_page=${perPage}`)
+
+        // Fetch activities for chart (up to the limit)
+        const chartActivities = await fetchStravaData(accessToken, `athlete/activities?per_page=${limit}`)
+
+        return NextResponse.json({
+            paginatedActivities,
+            chartActivities,
+            athleteStats,
+            athlete,
+            page,
+            perPage,
+            limit
+        })
     } catch (error) {
         console.error('Failed to fetch Strava data:', error)
         return NextResponse.json({ error: 'Failed to fetch Strava data' }, { status: 500 })

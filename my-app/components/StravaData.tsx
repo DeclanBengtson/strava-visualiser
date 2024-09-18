@@ -52,26 +52,26 @@ interface DashboardData {
     activities: StravaActivity[]
     athleteStats: AthleteStats
     athlete: Athlete
+    page: number
+    perPage: number
+    limit: number
 }
 
 export default function StravaData() {
     const [data, setData] = useState<DashboardData[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    
+
     const fetchData = async () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch('/api/strava/activities')
+            const response = await fetch('/api/strava/activities?page=1&per_page=30&limit=200')
             if (!response.ok) {
                 throw new Error('Failed to fetch data')
             }
             const dashboardData = await response.json()
-            
             setData(dashboardData)
-            
-            
         } catch (err) {
             setError('Failed to load data. Please try again.')
         } finally {
@@ -79,7 +79,6 @@ export default function StravaData() {
         }
     }
     
- console.log(data['athlete'])
 
     useEffect(() => {
         fetchData()
@@ -157,6 +156,8 @@ export default function StravaData() {
                         formatDate={formatDate}
                         formatDuration={formatDuration}
                         formatDistance={formatDistance}
+                        initialPage={data['page']}
+                        initialPerPage={data['perPage']}
                     />
                 </TabsContent>
                 <TabsContent value="chart">
