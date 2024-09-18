@@ -74,11 +74,15 @@ export function RecentActivities({ activities, formatDate, formatDuration, forma
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    {activity.start_latlng && (
+                                    {activity.start_latlng && Array.isArray(activity.start_latlng) && activity.start_latlng.length === 2 ? (
                                         <div className="flex items-center space-x-2">
                                             <span>
-                                                {activity.start_latlng[0].toFixed(2)}, {activity.start_latlng[1].toFixed(2)}
-                                            </span>
+                                                    {activity.start_latlng[0].toFixed(2)}, {activity.start_latlng[1].toFixed(2)}
+                                                </span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center space-x-2">
+                                            <span>No location data</span>
                                         </div>
                                     )}
                                 </TableCell>
