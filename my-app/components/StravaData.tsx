@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import ChartComponent from "@/components/StravaChart.tsx";
+import RadarComponent from "@/components/StravaRadar.tsx";
 import { RecentActivities } from "@/components/RecentActivities"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {Stats} from "@/components/Stats.tsx";
@@ -72,6 +73,7 @@ export default function StravaData() {
             }
             const dashboardData = await response.json()
             setData(dashboardData)
+            
         } catch (err) {
             setError('Failed to load data. Please try again.')
         } finally {
@@ -131,16 +133,16 @@ export default function StravaData() {
             <Tabs defaultValue="stats" className="space-y-4">
                 <TabsList className="bg-gray-100">
                     <TabsTrigger value="stats" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
-                       
                         <span>Stats</span>
                     </TabsTrigger>
                     <TabsTrigger value="activities" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
-                        
                         <span>Activities</span>
                     </TabsTrigger>
                     <TabsTrigger value="chart" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
-                        
                         <span>Chart</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="radar" className="flex items-center space-x-2 data-[state=active]:bg-gray-300">
+                        <span>Radar</span>
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="stats">
@@ -163,6 +165,11 @@ export default function StravaData() {
                 <TabsContent value="chart">
                     <div className="h-[calc(100vh-12rem)]">
                         <ChartComponent activities={data['activities']}/>
+                    </div>
+                </TabsContent>
+                <TabsContent value="radar">
+                    <div className="h-[calc(100vh-12rem)]">
+                        <RadarComponent activities={data['activities']}/>
                     </div>
                 </TabsContent>
             </Tabs>
