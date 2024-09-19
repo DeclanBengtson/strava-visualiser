@@ -84,7 +84,7 @@ export function RecentActivities({ initialActivities, formatDate, formatDuration
                             size="sm"
                             className="p-0 w-8 h-8"
                         >
-                            <ChevronLeft className="h-4 w-4" />
+                            <ChevronLeft className="h-4 w-4 text-zinc-950" />
                         </Button>
                         <span className="text-sm">Page {page}</span>
                         <Button
@@ -94,7 +94,7 @@ export function RecentActivities({ initialActivities, formatDate, formatDuration
                             size="sm"
                             className="p-0 w-8 h-8"
                         >
-                            <ChevronRight className="h-4 w-4" />
+                            <ChevronRight className="h-4 w-4 text-zinc-950" />
                         </Button>
                     </div>
                 </CardTitle>
