@@ -22,9 +22,6 @@ interface StravaActivity {
     // Add other relevant fields
 }
 
-interface StravaChartProps {
-    activities: StravaActivity[] | undefined;
-}
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
@@ -40,10 +37,33 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
 };
 
 
-export default function ChartComponent({activities}: StravaChartProps) {
+export default function ChartComponent() {
     const [showDuration, setShowDuration] = React.useState(false);
+    const [activities, setActivities] = React.useState<StravaActivity[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const response = await fetch('/api/strava/activities?limit=200');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch activities');
+                }
+                const data = await response.json();
+                setActivities(data.chartActivities);
+            } catch (err) {
+                console.error('Error fetching activities:', err);
+                setError('Failed to load activities. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchActivities();
+    }, []);
+
     const chartData = React.useMemo(() => {
-        if (!activities) return [];
         return activities.map(activity => ({
             date: new Date(activity.start_date_local).toLocaleDateString(),
             distance: activity.distance / 1000, // Convert to kilometers
@@ -59,7 +79,37 @@ export default function ChartComponent({activities}: StravaChartProps) {
         [chartData]
     )
 
+    if (loading) {
+        return (
+            <Card className="bg-black text-gray-100">
+                <CardHeader>
+                    <CardTitle>Line Chart - Interactive</CardTitle>
+                    <CardDescription className="text-gray-400">
+                        Loading activity data...
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+                </CardContent>
+            </Card>
+        );
+    }
 
+    if (error) {
+        return (
+            <Card className="bg-black text-gray-100">
+                <CardHeader>
+                    <CardTitle>Line Chart - Interactive</CardTitle>
+                    <CardDescription className="text-gray-400">
+                        Error loading data
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center justify-center h-64">
+                    <p className="text-red-500">{error}</p>
+                </CardContent>
+            </Card>
+        );
+    }
     
     if (!activities || activities.length === 0) {
         return (
