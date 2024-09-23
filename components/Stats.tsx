@@ -35,6 +35,8 @@ interface StatsProps {
 export function Stats({ athleteStats, formatDistance, formatDuration }: StatsProps) {
     
     const ytdDistance = athleteStats.ytd_run_totals.distance / 1000 // Convert to km
+    const allRunsTotal = athleteStats.all_run_totals.distance / 1000
+    const recentRunsTotal = athleteStats.recent_run_totals.distance / 1000
     
     return (
         <div className="flex flex-col lg:flex-row gap-6">
@@ -55,7 +57,7 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
                             <div className="flex flex-col">
                                 <span className="text-gray-400">Total Distance</span>
                                 <span
-                                    className="text-2xl font-bold">{formatDistance(athleteStats.all_run_totals.distance)}</span>
+                                    className="text-2xl font-bold">{formatDistance(allRunsTotal)}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-gray-400">Total Time</span>
@@ -86,7 +88,7 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
                             <div className="flex flex-col">
                                 <span className="text-gray-400">YTD Distance</span>
                                 <span
-                                    className="text-2xl font-bold">{formatDistance(athleteStats.ytd_run_totals.distance)}</span>
+                                    className="text-2xl font-bold">{formatDistance(ytdDistance)}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-gray-400">YTD Time</span>
@@ -117,7 +119,7 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
                             <div className="flex flex-col">
                                 <span className="text-gray-400">Recent Distance</span>
                                 <span
-                                    className="text-2xl font-bold">{formatDistance(athleteStats.recent_run_totals.distance)}</span>
+                                    className="text-2xl font-bold">{formatDistance(recentRunsTotal)}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-gray-400">Recent Time</span>

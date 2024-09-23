@@ -6,7 +6,7 @@ export default function StravaAuthButton() {
     const handleAuth = () => {
         window.location.href = '/api/strava/auth'
     }
-    console.log("Hello")
+    
     return (
         <Button onClick={handleAuth} className="bg-[#FC4C02] hover:bg-[#FC4C02]/80 text-white">
             Connect with Strava

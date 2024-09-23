@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
 import ChartComponent from "@/components/StravaChart.tsx";
 import RadarComponent from "@/components/StravaRadar.tsx";
 import { RecentActivities } from "@/components/RecentActivities"
@@ -59,9 +60,10 @@ interface DashboardData {
 }
 
 export default function StravaData() {
-    const [data, setData] = useState<DashboardData[]>([])
+    const [data, setData] = useState<DashboardData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const router = useRouter()
 
     const fetchData = async () => {
         setLoading(true)
@@ -102,11 +104,34 @@ export default function StravaData() {
         return `${km} km`
     }
 
-    const handleLogout = () => {
-        // Implement logout logic here
-        console.log('Logging out...')
+    const handleLogout = async () => {
+        try {
+            const response = await fetch('/api/strava/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            if (response.ok) {
+                // Clear local state
+                setData(null)
+                // Redirect to home page or login page
+                router.push('/')
+            } else {
+                throw new Error('Logout failed')
+            }
+        } catch (error) {
+            console.error('Logout error:', error)
+            setError('Logout failed. Please try again.')
+        }
     }
 
+    if (!data) {
+        // If there's no data, redirect to the home page
+        router.push('/')
+        return null
+    }
+    
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
