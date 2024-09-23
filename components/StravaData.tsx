@@ -98,7 +98,7 @@ export default function StravaData() {
     }
     
     const formatDistance = (distance: number) => {
-        const km = (distance / 1000).toFixed(2)
+        const km = (distance).toFixed(2)
         return `${km} km`
     }
 
