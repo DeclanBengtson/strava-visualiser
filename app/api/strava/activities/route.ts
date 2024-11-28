@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 async function refreshAccessToken(refreshToken: string): Promise<string | null> {
@@ -17,7 +17,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string | null> 
     if (!response.ok) {
         throw new Error('Failed to refresh token')
     }
-    
+
     const data = await response.json()
     return data.access_token
 }
@@ -35,15 +35,16 @@ async function fetchStravaData(accessToken: string, endpoint: string) {
 
     return response.json()
 }
-export async function GET( request: NextRequest) {
+
+export async function GET(request: NextRequest) {
     const cookieStore = cookies()
     const accessToken: string | undefined = cookieStore.get('strava_access_token')?.value
     const refreshToken = cookieStore.get('strava_refresh_token')?.value
 
     if (!accessToken && refreshToken) {
         try {
-            const accessToken = await refreshAccessToken(refreshToken)
-            cookies().set('strava_access_token', accessToken, {
+            const newAccessToken = await refreshAccessToken(refreshToken)
+            cookies().set('strava_access_token', newAccessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 3600 // 1 hour
@@ -53,22 +54,21 @@ export async function GET( request: NextRequest) {
             return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
         }
     }
-    
+
     if (!accessToken) {
         return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-
     try {
         // Parse query parameters
         const searchParams = request.nextUrl.searchParams
-        const page = parseInt(searchParams.get('page') || '1', 10)
+        const before = searchParams.get('before') || Math.floor(Date.now() / 1000).toString()
         const perPage = parseInt(searchParams.get('per_page') || '30', 10)
         const limit = parseInt(searchParams.get('limit') || '200', 10)
 
-        // Ensure page and perPage are valid numbers
-        if (isNaN(page) || isNaN(perPage) || page < 1 || perPage < 1) {
-            return NextResponse.json({ error: 'Invalid page or per_page parameter' }, { status: 400 })
+        // Ensure perPage is a valid number
+        if (isNaN(perPage) || perPage < 1 || perPage > 200) {
+            return NextResponse.json({ error: 'Invalid per_page parameter' }, { status: 400 })
         }
 
         // First, fetch the athlete data to get the ID
@@ -77,18 +77,18 @@ export async function GET( request: NextRequest) {
         // Fetch stats
         const athleteStats = await fetchStravaData(accessToken, `athletes/${athlete.id}/stats`)
 
-        // Fetch paginated activities
-        const paginatedActivities = await fetchStravaData(accessToken, `athlete/activities?page=${page}&per_page=${perPage}`)
-
         // Fetch activities for chart (up to the limit)
-        const chartActivities = await fetchStravaData(accessToken, `athlete/activities?per_page=${limit}`)
+        const chartActivities = await fetchStravaData(accessToken, `athlete/activities?before=${before}&per_page=${perPage}`)
+
+        // Fetch the most recent activities for the paginated view
+        // const paginatedActivities = await fetchStravaData(accessToken, `athlete/activities?per_page=${perPage}`)
 
         return NextResponse.json({
-            paginatedActivities,
+            //paginatedActivities,
             chartActivities,
             athleteStats,
             athlete,
-            page,
+            before,
             perPage,
             limit
         })
@@ -97,3 +97,4 @@ export async function GET( request: NextRequest) {
         return NextResponse.json({ error: 'Failed to fetch Strava data' }, { status: 500 })
     }
 }
+

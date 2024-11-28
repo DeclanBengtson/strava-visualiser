@@ -32,7 +32,7 @@ export function RecentActivities({ initialActivities, formatDate, formatDuration
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const fetchActivities = useCallback(async (pageNum: number) => { // Update 3: Added useCallback
+    const fetchActivities = useCallback(async (pageNum: number) => { 
         setLoading(true);
         setError(null);
         try {
