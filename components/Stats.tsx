@@ -1,9 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress.tsx"
-import { Input } from "@/components/ui/input.tsx"
 import { GoalService } from "./GoalService"
-import { User, Award, Zap, Target } from 'lucide-react'
-import {useState, useEffect} from "react";
+import { User, Award, Zap} from 'lucide-react'
 
 interface AthleteStats {
     recent_run_totals: {
@@ -34,9 +31,9 @@ interface StatsProps {
 
 export function Stats({ athleteStats, formatDistance, formatDuration }: StatsProps) {
     
-    const ytdDistance = athleteStats.ytd_run_totals.distance / 1000 // Convert to km
-    const allRunsTotal = athleteStats.all_run_totals.distance / 1000
-    const recentRunsTotal = athleteStats.recent_run_totals.distance / 1000
+    const ytdDistance = athleteStats.ytd_run_totals.distance  // Convert to km
+    const allRunsTotal = athleteStats.all_run_totals.distance 
+    const recentRunsTotal = athleteStats.recent_run_totals.distance 
     
     return (
         <div className="flex flex-col lg:flex-row gap-6">

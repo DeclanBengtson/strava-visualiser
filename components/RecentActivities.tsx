@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {Activity, ChevronLeft, ChevronRight} from 'lucide-react'
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import { Button } from "@/components/ui/button"
 
 interface StravaActivity {
@@ -28,37 +28,36 @@ interface RecentActivitiesProps {
 export function RecentActivities({ initialActivities, formatDate, formatDuration, formatDistance, initialPage, initialPerPage }: RecentActivitiesProps) {
     const [activities, setActivities] = useState<StravaActivity[]>(initialActivities)
     const [page, setPage] = useState(initialPage)
-    const [perPage, setPerPage] = useState(initialPerPage)
+    const [perPage] = useState(initialPerPage)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const fetchActivities = async (pageNum: number) => {
-        setLoading(true)
-        setError(null)
+    const fetchActivities = useCallback(async (pageNum: number) => { // Update 3: Added useCallback
+        setLoading(true);
+        setError(null);
         try {
-            const response = await fetch(`/api/strava/activities?page=${pageNum}&per_page=${perPage}`)
+            const response = await fetch(`/api/strava/activities?page=${pageNum}&per_page=${perPage}`);
             if (!response.ok) {
-                throw new Error('Failed to fetch activities')
+                throw new Error('Failed to fetch activities');
             }
-            const data = await response.json()
+            const data = await response.json();
             if (Array.isArray(data.paginatedActivities)) {
-                setActivities(data.paginatedActivities)
-                setPage(pageNum)
+                setActivities(data.paginatedActivities);
+                setPage(pageNum);
             } else {
-                throw new Error('Invalid response format')
+                throw new Error('Invalid response format');
             }
         } catch (error) {
-            console.error('Error fetching activities:', error)
-            setError('Failed to load activities. Please try again.')
+            console.error('Error fetching activities:', error);
+            setError('Failed to load activities. Please try again.');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    }, [perPage]);
 
-    useEffect(() => {
-        fetchActivities(page)
-    }, [])
-    
+    useEffect(() => { 
+        fetchActivities(page);
+    }, [page, perPage, fetchActivities]);
     const handlePrevPage = () => {
         if (page > 1) {
             fetchActivities(page - 1)

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import ChartComponent from "@/components/StravaChart.tsx";
-import RadarComponent from "@/components/StravaRadar.tsx";
 import { RecentActivities } from "@/components/RecentActivities"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {Stats} from "@/components/Stats.tsx";
@@ -51,7 +50,8 @@ interface Athlete {
 }
 
 interface DashboardData {
-    activities: StravaActivity[]
+    paginatedActivities: StravaActivity[]
+    chartActivities: StravaActivity[]
     athleteStats: AthleteStats
     athlete: Athlete
     page: number
@@ -75,14 +75,14 @@ export default function StravaData() {
             }
             const dashboardData = await response.json()
             setData(dashboardData)
-            
+            console.log("Fetched dashboard data:", dashboardData)
         } catch (err) {
+            console.error('Error fetching data:', err)
             setError('Failed to load data. Please try again.')
         } finally {
             setLoading(false)
         }
     }
-    
 
     useEffect(() => {
         fetchData()
@@ -98,10 +98,12 @@ export default function StravaData() {
         const minutes = Math.floor((seconds % 3600) / 60)
         return `${hours}h ${minutes}m`
     }
-    
-    const formatDistance = (distance: number) => {
-        const km = (distance).toFixed(2)
-        return `${km} km`
+
+    function formatDistance(distance: number): string {
+        // Convert distance from meters to kilometers
+        const km = distance / 1000;
+        // Format to 2 decimal places using the browser's locale
+        return `${new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(km)} km`;
     }
 
     const handleLogout = async () => {
@@ -172,29 +174,24 @@ export default function StravaData() {
                 </TabsList>
                 <TabsContent value="stats">
                     <Stats
-                        athleteStats={data['athleteStats']}
+                        athleteStats={data.athleteStats}
                         formatDistance={formatDistance}
                         formatDuration={formatDuration}
                     />
                 </TabsContent>
                 <TabsContent value="activities">
                     <RecentActivities
-                        activities={data['activities']}
+                        initialActivities={data.paginatedActivities}
                         formatDate={formatDate}
                         formatDuration={formatDuration}
                         formatDistance={formatDistance}
-                        initialPage={data['page']}
-                        initialPerPage={data['perPage']}
+                        initialPage={data.page}
+                        initialPerPage={data.perPage}
                     />
                 </TabsContent>
                 <TabsContent value="chart">
                     <div className="h-[calc(100vh-12rem)]">
-                        <ChartComponent activities={data['activities']}/>
-                    </div>
-                </TabsContent>
-                <TabsContent value="radar">
-                    <div className="h-[calc(100vh-12rem)]">
-                        <RadarComponent activities={data['activities']}/>
+                        <ChartComponent activities={data.chartActivities}/>
                     </div>
                 </TabsContent>
             </Tabs>

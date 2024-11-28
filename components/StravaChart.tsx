@@ -4,6 +4,7 @@ import * as React from "react"
 import {CartesianGrid, BarChart, ResponsiveContainer, Tooltip, Legend, XAxis, YAxis, Bar, TooltipProps} from "recharts"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { StravaActivity } from "@/types/strava"
 
 import {
     Card,
@@ -13,15 +14,9 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-interface StravaActivity {
-    id: number;
-    name: string;
-    distance: number;
-    moving_time: number;
-    start_date_local: string;
-    // Add other relevant fields
+interface ChartComponentProps {
+    activities: StravaActivity[]
 }
-
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
@@ -36,40 +31,25 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
     return null;
 };
 
-
-export default function ChartComponent() {
+export default function ChartComponent({ activities }: ChartComponentProps) {
     const [showDuration, setShowDuration] = React.useState(false);
-    const [activities, setActivities] = React.useState<StravaActivity[]>([]);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
 
-    React.useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const response = await fetch('/api/strava/activities?limit=200');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch activities');
-                }
-                const data = await response.json();
-                setActivities(data.chartActivities);
-            } catch (err) {
-                console.error('Error fetching activities:', err);
-                setError('Failed to load activities. Please try again.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchActivities();
-    }, []);
+    console.log("StravaChart received activities:", activities);
 
     const chartData = React.useMemo(() => {
+        if (!activities || activities.length === 0) {
+            console.log("No activities or empty array");
+            return [];
+        }
+        console.log("Processing activities for chart data");
         return activities.map(activity => ({
             date: new Date(activity.start_date_local).toLocaleDateString(),
             distance: activity.distance / 1000, // Convert to kilometers
             duration: activity.moving_time / 3600 // Convert to hours
         }));
     }, [activities]);
+
+    console.log("Processed chart data:", chartData);
 
     const total = React.useMemo(
         () => ({
@@ -78,38 +58,7 @@ export default function ChartComponent() {
         }),
         [chartData]
     )
-
-    if (loading) {
-        return (
-            <Card className="bg-black text-gray-100">
-                <CardHeader>
-                    <CardTitle>Line Chart - Interactive</CardTitle>
-                    <CardDescription className="text-gray-400">
-                        Loading activity data...
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    if (error) {
-        return (
-            <Card className="bg-black text-gray-100">
-                <CardHeader>
-                    <CardTitle>Line Chart - Interactive</CardTitle>
-                    <CardDescription className="text-gray-400">
-                        Error loading data
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="flex items-center justify-center h-64">
-                    <p className="text-red-500">{error}</p>
-                </CardContent>
-            </Card>
-        );
-    }
+    console.log("Calculated totals:", total);
     
     if (!activities || activities.length === 0) {
         return (
@@ -126,9 +75,6 @@ export default function ChartComponent() {
             </Card>
         );
     }
-    
-
-
     return (
         <Card className="bg-black text-gray-100">
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b border-gray-800 p-0 sm:flex-row">
@@ -149,7 +95,6 @@ export default function ChartComponent() {
                         Show Duration
                     </Label>
                 </div>
-
             </CardHeader>
             <CardContent className="px-2 sm:p-6 bg-black text-white border border-gray-800">
                 <ResponsiveContainer width="100%" height={400}>
@@ -217,13 +162,14 @@ export default function ChartComponent() {
                         <p className="text-2xl font-semibold text-gray-100">{total.distance.toFixed(2)} km</p>
                     </div>
                     {showDuration && (
-                    <div>
-                        <h3 className="text-sm font-medium text-gray-400">Total Duration</h3>
-                        <p className="text-2xl font-semibold text-gray-100">{total.duration.toFixed(2)} hours</p>
-                    </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-400">Total Duration</h3>
+                            <p className="text-2xl font-semibold text-gray-100">{total.duration.toFixed(2)} hours</p>
+                        </div>
                     )}
                 </div>
             </CardContent>
         </Card>
     )
 }
+
