@@ -9,7 +9,7 @@ export default function Dashboard() {
     
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
+            <div className="w-full max-w-* bg-white shadow-lg rounded-lg p-8">
             {isAuthenticated ? (
                 <StravaData />
             ) : (
