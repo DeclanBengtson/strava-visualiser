@@ -1,24 +1,27 @@
-import { cookies } from 'next/headers'
-import StravaAuthButton from '../components/StravaAuthButton.tsx'
-import StravaData from '../components/StravaData.tsx'
+import { cookies } from 'next/headers';
+import StravaAuthButton from '../components/StravaAuthButton.tsx';
+import StravaData from '../components/StravaData.tsx';
 
 export default function Dashboard() {
-    const cookieStore = cookies()
-    const isAuthenticated = !!cookieStore.get('strava_refresh_token')
-    console.log(cookieStore)
+    const cookieStore = cookies();
+    const isAuthenticated = !!cookieStore.get('strava_refresh_token');
+    console.log(cookieStore);
     
     return (
-        <div className="container mx-auto p-4">
-            
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
             {isAuthenticated ? (
                 <StravaData />
             ) : (
-                <div>
-                    <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-                    <p className="mb-4">Connect your Strava account to see your activities.</p>
-                    <StravaAuthButton/>
+                    <div className="text-center">
+                        <h1 className="text-4xl font-extrabold text-gray-800 mb-6">Dashboard</h1>
+                        <p className="text-lg text-gray-600 mb-6">
+                            Connect your Strava account to see your activities.
+                        </p>
+                        <StravaAuthButton />
                 </div>
             )}
         </div>
-    )
+        </div>
+    );
 }
