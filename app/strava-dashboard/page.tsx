@@ -201,15 +201,6 @@ export default function StravaData() {
                     </div>
                     
                     <Tabs defaultValue="stats" className="space-y-6">
-                        <TabsList className="bg-gray-100 p-1 rounded-lg">
-                            <TabsTrigger 
-                                value="stats"
-                                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-sm rounded-md transition-all"
-                            >
-                                Statistics
-                            </TabsTrigger>
-                        </TabsList>
-                        
                         <TabsContent value="stats" className="mt-6">
                             <Stats
                                 athleteStats={data.athleteStats}
