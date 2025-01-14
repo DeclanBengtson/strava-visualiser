@@ -2,11 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import ChartComponent from "@/components/StravaChart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Stats } from "@/components/Stats"
 import { AthleteAvatar } from "@/components/AthleteAvatar"
-import YearlyProgressChart from "@/components/YearlyProgressChart"
 
 interface StravaActivity {
     id: number
@@ -94,15 +92,14 @@ export default function StravaData() {
             let allActivities: StravaActivity[] = []
             let athleteData: Athlete | null = null
             let athleteStats: AthleteStats | null = null
-            const perPage = 200 // Strava API maximum per request
+            const perPage = 200
             const maxActivities = 1000
-            let oldestActivityTime = Math.floor(Date.now() / 1000) // Start with current timestamp
+            let oldestActivityTime = Math.floor(Date.now() / 1000)
 
             while (allActivities.length < maxActivities) {
                 const fetchedData = await fetchActivities(oldestActivityTime, perPage)
-                if (fetchedData.chartActivities.length === 0) break // No more activities to fetch
+                if (fetchedData.chartActivities.length === 0) break
 
-                // Capture athlete and athleteStats data from the first API call
                 if (!athleteData) {
                     athleteData = fetchedData.athlete
                     athleteStats = fetchedData.athleteStats
@@ -111,7 +108,7 @@ export default function StravaData() {
                 allActivities = [...allActivities, ...fetchedData.chartActivities]
                 oldestActivityTime = new Date(fetchedData.chartActivities[fetchedData.chartActivities.length - 1].start_date_local).getTime() / 1000 - 1
 
-                if (fetchedData.chartActivities.length < perPage) break // Last page of activities
+                if (fetchedData.chartActivities.length < perPage) break
             }
 
             if (!athleteData || !athleteStats) {
@@ -142,11 +139,6 @@ export default function StravaData() {
     useEffect(() => {
         fetchAllActivities()
     }, [fetchAllActivities])
-
-    // const formatDate = (dateString: string) => {
-    //     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' }
-    //     return new Date(dateString).toLocaleDateString(undefined, options)
-    // }
 
     const formatDuration = (seconds: number) => {
         const hours = Math.floor(seconds / 3600)
@@ -180,46 +172,54 @@ export default function StravaData() {
     }
 
     if (loading) {
-        return <div className="flex justify-center items-center h-screen">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-gray-50">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500"></div>
+            </div>
+        )
     }
 
     if (error || !data || !data.athlete) {
-        return <div className="flex justify-center items-center h-screen text-red-500">Error: {error || 'No data available'}</div>
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-gray-50 text-red-500">
+                Error: {error || 'No data available'}
+            </div>
+        )
     }
 
     return (
-        <div className="container mx-auto p-4 bg-black text-white min-h-screen">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Strava Dashboard</h1>
-                <AthleteAvatar athlete={data.athlete} onLogout={handleLogout}/>
+        <div className="min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4 py-8">
+                <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+                        <div className="flex items-center space-x-4">
+                            <h1 className="text-3xl font-bold text-gray-900">
+                                Strava Dashboard
+                            </h1>
+                        </div>
+                        <AthleteAvatar athlete={data.athlete} onLogout={handleLogout} />
+                    </div>
+                    
+                    <Tabs defaultValue="stats" className="space-y-6">
+                        <TabsList className="bg-gray-100 p-1 rounded-lg">
+                            <TabsTrigger 
+                                value="stats"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-sm rounded-md transition-all"
+                            >
+                                Statistics
+                            </TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="stats" className="mt-6">
+                            <Stats
+                                athleteStats={data.athleteStats}
+                                formatDistance={formatDistance}
+                                formatDuration={formatDuration}
+                            />
+                        </TabsContent>
+                    </Tabs>
+                </div>
             </div>
-            <Tabs defaultValue="stats" className="space-y-4">
-                <TabsList className="bg-gray-100">
-                    <TabsTrigger value="stats">Stats</TabsTrigger>
-                    <TabsTrigger value="chart">Chart</TabsTrigger>
-                    <TabsTrigger value="yearly">Yearly Progress</TabsTrigger>
-                </TabsList>
-                <TabsContent value="stats">
-                    <Stats
-                        athleteStats={data.athleteStats}
-                        formatDistance={formatDistance}
-                        formatDuration={formatDuration}
-                    />
-                </TabsContent>
-                <TabsContent value="chart">
-                    <div className="h-[calc(100vh-12rem)]">
-                        <ChartComponent activities={data.chartActivities}/>
-                    </div>
-                </TabsContent>
-                <TabsContent value="yearly">
-                    <div className="h-[calc(100vh-12rem)]">
-                        <YearlyProgressChart activities={data.chartActivities} />
-                    </div>
-                </TabsContent>
-            </Tabs>
         </div>
     )
 }
-
