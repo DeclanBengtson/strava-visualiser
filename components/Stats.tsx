@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { User, Award, Zap } from 'lucide-react'
+import WeeklyDistanceChart from './WeeklyChart' 
 
 interface AthleteStats {
     recent_run_totals: {
@@ -55,8 +56,9 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
     )
 
     return (
-        <div className="flex flex-col lg:flex-row gap-6">
-            <StatCard 
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-col lg:flex-row justify-center gap-6">
+                <StatCard 
                     title="Athlete Overview"
                     icon={User}
                     stats={[
@@ -67,7 +69,7 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
                     ]}
                 />
 
-            <StatCard 
+                <StatCard 
                     title="Year-to-Date Stats"
                     icon={Award}
                     stats={[
@@ -78,7 +80,7 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
                     ]}
                 />
 
-            <StatCard 
+                <StatCard 
                     title="Recent Runs"
                     icon={Zap}
                     stats={[
@@ -89,5 +91,7 @@ export function Stats({ athleteStats, formatDistance, formatDuration }: StatsPro
                     ]}
                 />
             </div>
+            <WeeklyDistanceChart /> 
+        </div>
     )
 }
